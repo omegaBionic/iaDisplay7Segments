@@ -5,6 +5,7 @@ from keras.layers import Dense, Input
 from keras.models import Sequential
 from keras.optimizers import SGD
 from keras.utils import to_categorical
+import matplotlib.pyplot as plt
 
 # Open and parse csv for learning
 input_array = []
@@ -16,9 +17,6 @@ with open("datas_learn.csv", newline='') as csv_file:
         #arr_input = np.zeros((1, 7))
         arr_teacher = 0
 
-        # print("arr_input: '{}'".format(row[0:6]))
-        # print("arr_teacher: '{}'".format(row[7:15]))
-        # print("----")
         arr_input = list(map(int, row[0:7]))
         arr_teacher = int(row[7])
         input_array.append(arr_input)
@@ -77,10 +75,11 @@ model.add(Dense(9, activation='sigmoid'))
 model.add(Dense(10, activation='softmax'))
 
 model.summary()
-model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+#model.compile(optimizer=sgd, loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-model.fit(input_learn_np_array, teacher_learn_np_array, epochs=5000,
-          validation_data=(input_test_np_array, teacher_test_np_array))
+model_history = model.fit(input_learn_np_array, teacher_learn_np_array, epochs=5000,
+                validation_data=(input_test_np_array, teacher_test_np_array))
 
 #   Voyons voir si notre réseau de neurones a bien appris !
 value_to_guess = np.array([[[0, 1, 1, 0, 0, 1, 0]], [[0, 1, 0, 0, 0, 0, 0]]])
@@ -92,3 +91,26 @@ for v in predictions:
     print('List of Indices of maximum element :', result[0])
     print('Returned tuple of arrays :', result)
     print(f'Not rounded value : {np.amax(v[0])}')
+
+model_history.history['accuracy']
+#tracer les courbes d'apprentissage
+# summarize history for accuracy
+f = plt.figure(1)
+plt.plot(model_history.history['accuracy'])
+plt.plot(model_history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='best')
+plt.grid()
+
+# summarize history for loss
+g = plt.figure(2)
+plt.plot(model_history.history['loss'])
+plt.plot(model_history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='best')
+plt.grid()
+plt.show()
