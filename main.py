@@ -68,8 +68,8 @@ sgd = SGD(lr=0.05)
 model = Sequential()
 model.add(Dense(8, input_dim=7, activation='relu', input_shape=(1, 7)))
 
-# hiden layers
-model.add(Dense(9, activation='sigmoid'))
+# second hiden layer
+#model.add(Dense(9, activation='sigmoid'))
 
 # output layer
 model.add(Dense(10, activation='softmax'))
